@@ -10,7 +10,6 @@ public class Main {
     public static void main(String[] args) {
         ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
         UserService userService = context.getBean(UserService.class);
-
         userService.add(new User("ADMIN", "11"));
         userService.add(new User("USER", "22"));
 
