@@ -20,18 +20,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserResponseDto getUserDto(@PathVariable Long id) {
-        User user = userService.get(id);
-        UserResponseDto userResponseDto = new UserResponseDto();
-        userResponseDto.setEmail(user.getEmail());
-        userResponseDto.setName(user.getName());
-        return userResponseDto;
+    public UserResponseDto getUser(@PathVariable Long id) {
+        return getUserDto(userService.get(id));
     }
 
     @GetMapping
     public List<UserResponseDto> getAll() {
         return userService.listUsers().stream()
-                .map(u -> getUserDto(u.getId()))
+                .map(this::getUserDto)
                 .collect(Collectors.toList());
     }
 
@@ -45,5 +41,12 @@ public class UserController {
             userService.add(user);
         }
         return "Injecting done!";
+    }
+
+    private UserResponseDto getUserDto(User user) {
+        UserResponseDto userResponseDto = new UserResponseDto();
+        userResponseDto.setEmail(user.getEmail());
+        userResponseDto.setName(user.getName());
+        return userResponseDto;
     }
 }
