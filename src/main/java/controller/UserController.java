@@ -1,7 +1,7 @@
 package controller;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import model.User;
 import model.UserResponseDto;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +19,8 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/get/{id}")
-    public UserResponseDto get(@PathVariable Long id) {
+    @GetMapping("/{id}")
+    public UserResponseDto getUserDto(@PathVariable Long id) {
         User user = userService.get(id);
         UserResponseDto userResponseDto = new UserResponseDto();
         userResponseDto.setEmail(user.getEmail());
@@ -28,13 +28,11 @@ public class UserController {
         return userResponseDto;
     }
 
-    @GetMapping("/getall")
+    @GetMapping
     public List<UserResponseDto> getAll() {
-        List<UserResponseDto> allUsersDto = new ArrayList<>();
-        for (User user : userService.listUsers()) {
-            allUsersDto.add(get(user.getId()));
-        }
-        return allUsersDto;
+        return userService.listUsers().stream()
+                .map(u -> getUserDto(u.getId()))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/inject")
