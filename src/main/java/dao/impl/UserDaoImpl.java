@@ -8,11 +8,12 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class UserDaoImpl implements UserDao {
-
+    @Autowired
     private final SessionFactory sessionFactory;
 
     public UserDaoImpl(SessionFactory sessionFactory) {
@@ -41,12 +42,23 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public User get(Long id) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<User> query = session.createQuery("from User where id = :id", User.class);
+            query.setParameter("id", id);
+            return query.uniqueResult();
+        } catch (Exception e) {
+            throw new DataProcessingException("Can't get user from db.", e);
+        }
+    }
+
+    @Override
     public List<User> listUsers() {
         try (Session session = sessionFactory.openSession()) {
             Query<User> query = session.createQuery("from User", User.class);
             return query.list();
         } catch (Exception e) {
-            throw new DataProcessingException("Could not get list of users from DB.", e);
+            throw new DataProcessingException("Can't get list of users from db.", e);
         }
     }
 }
